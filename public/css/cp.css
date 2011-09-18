@@ -1,0 +1,19 @@
+body{
+  background-color: #555566;
+}
+
+header {
+  margin: 1em 0em 1em 0em;
+}
+
+#header, #content{
+  background-color: #e4e4e4;
+}
+
+
+footer{
+  text-align: right;
+  color: white;
+  font-size: .9em;
+  margin-top: 5px;
+}

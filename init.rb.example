@@ -1,0 +1,8 @@
+begin
+  dbh = DBI.connect('DBI:Pg:collispuro_production:db', 'collispuro_production','4Oc2Ockhoa')  
+rescue DBI::DatabaseError => e
+  'Oops. DB fail.'
+end
+
+set :base_page_title,  'Collis-Puro Consulting'
+set :page_title_separator, ' :: '
