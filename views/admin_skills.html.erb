@@ -1,5 +1,13 @@
 <h1>Skills</h1>
 
+<% unless @skills.nil? %>
+  <ul>
+    <% @skills.each do|skill| %>
+      <li><%= @cgi_obj.a(url('skill/' + skill[0].to_s)){skill[1]} %> <sup><%= @cgi_obj.a(url('admin/skill/edit/' + skill[0].to_s)){'edit'} %></sup></li>
+    <% end %>
+  </ul>
+<% end %>
+
 <div class="new_object">
   <%= @cgi_obj.a(url('admin/skill/new')){'New skill'} %>
 </div>

@@ -60,6 +60,11 @@
     <!-- this section shows you most of the styled elements from the general stylesheet -->
     <section class="row" id="content">
       <div class="col_16 col">
+        <% unless @error.nil? %>
+          <div class="error">
+            <%= @error %>
+          </div>
+        <% end %>
         <%= yield %>
       </div>
     </section><!-- row -->

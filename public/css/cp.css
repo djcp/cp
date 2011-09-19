@@ -17,3 +17,13 @@ footer{
   font-size: .9em;
   margin-top: 5px;
 }
+
+.error{
+  margin: .5em;
+  padding: .5em;
+  border: 2px solid red;
+  color: red;
+  background: pink;
+  font-weight: bold;
+  border-radius: 10px;
+}

@@ -5,25 +5,27 @@ require 'erubis'
 require 'init'
 require 'helpers'
 require 'cgi'
+require 'partials'
+require 'sql_statements'
+# set :erubis, :escape_html => true
+
+set :environment, :development
+
+helpers Sinatra::Partials
 
 Tilt.register 'html.erb', Tilt[:erubis]
 
 before do
-  begin
-    dbh = DBI.connect(['DBI', 
-      settings.db_type,
-      settings.db_name,
-      settings.db_host,
-      ].join(':'),
-      settings.db_username,
-      settings.db_password
-    )
-  rescue DBI::DatabaseError => e
-  'Oops. DB fail.'
-  end
+  @dbh = DBI.connect(['DBI', 
+    settings.db_type,
+    settings.db_name,
+    settings.db_host,
+    ].join(':'),
+    settings.db_username,
+    settings.db_password
+  )
   @cgi_obj = CGI.new('html4')
 end
-
 
 get '/' do
   set_page_title('Home')
@@ -36,40 +38,71 @@ get '/admin' do
 end
 
 get '/admin/skills' do
-  set_page_title('Skills admin')
-  erubis :admin_skills
+  begin
+    @skills = @dbh.select_all(settings.sql[:get_skills])
+    set_page_title('Skills admin')
+    erubis :admin_skills
+  rescue DBI::DatabaseError => e
+  end
 end
 
 get '/admin/skill/new' do
+  @skill = []
   set_page_title('New skill')
-  @form = @cgi_obj.form('post', url('admin/skill/create')) do
-    @cgi_obj.fieldset() do
-      '<legend>New Skill</legend>' + 
-      '<div>' + 
-      @cgi_obj.label('for' => 'skill_name'){'Skill'} +
-      @cgi_obj.text_field('name' => 'name', 'id' => 'skill_name', 'size' => '50') + 
-      "</div>" +  
-      "<div>" + 
-      @cgi_obj.label('for' => 'skill_url'){"Canonical link for skill - e.g. for ruby you'd link to ruby-lang.org"} +
-      @cgi_obj.text_field('name' => 'url', 'id' => 'skill_url', 'size' => '100') + 
-      "</div>" +
-      '<div class="textarea">' + 
-      @cgi_obj.label('for' => 'skill_description'){'Description'} + 
-      @cgi_obj.textarea('name' => 'description', 'id' => 'skill_description') + 
-      '</div>' +
-      '<div>' + 
-      @cgi_obj.label('for' => 'skill_skill_level'){'Skill level'} + 
-      @cgi_obj.text_field('name' => 'skill_level', 'id' => 'skill_skill_level') + 
-      '</div>' +
-      '<div>' +
-      @cgi_obj.submit('New Skill') + 
-      '</div>'
-    end
-  end
   erubis :admin_skill_new
 end
 
-post '/admin/skill/create' do
-
+get '/admin/skill/edit/:skill_id' do
+  begin
+    @skill = @dbh.select_one(settings.sql[:get_skill],params[:skill_id])
+    if @skill.nil?
+      raise DBI::DatabaseError.new('Not found.')
+    end
+    $stderr.puts @skill.inspect
+    set_page_title('Edit skill')
+    erubis :admin_skill_edit
+  rescue DBI::DatabaseError => e
+    404
+    @error = "Couldn't find that skill. #{e.errstr}"
+    erubis :index
+  end
 end
 
+post '/admin/skill/create' do
+  begin
+    sth = @dbh.prepare(settings.sql[:insert_skill])
+    sth.execute(
+      params[:name],
+      params[:url],
+      params[:description],
+      params[:skill_level].to_i
+    )
+    redirect '/admin/skills'
+  rescue DBI::DatabaseError => e
+    @error = "There was a problem saving this. Please try again. The database said: #{e.errstr}"
+    @skill = [0,params[:name], params[:url], params[:description], params[:skill_level].to_i]
+    erubis :admin_skill_new
+  end
+end
+
+post '/admin/skill/update' do
+  begin
+    sth = @dbh.prepare(settings.sql[:update_skill])
+    sth.execute(
+      params[:name],
+      params[:url],
+      params[:description],
+      params[:skill_level].to_i,
+      params[:skill_id].to_i
+    )
+    redirect '/admin/skills'
+  rescue DBI::DatabaseError => e
+    @error = "There was a problem saving this. Please try again. The database said: #{e.errstr}"
+    @skill = [params[:skill_id].to_i,params[:name], params[:url], params[:description], params[:skill_level].to_i]
+    erubis :admin_skill_edit
+  end
+end
+
+get 'skill/:id/:name' do
+
+end
