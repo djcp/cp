@@ -3,7 +3,7 @@
 <% unless @skills.nil? %>
   <ul>
     <% @skills.each do|skill| %>
-      <li><%= @cgi_obj.a(url('skill/' + skill[0].to_s)){skill[1]} %> <sup><%= @cgi_obj.a(url('admin/skill/edit/' + skill[0].to_s)){'edit'} %></sup></li>
+      <li><%= @cgi_obj.a(url('skill/' + skill[:skill_id].to_s)){skill[:name]} %> <sup><%= @cgi_obj.a(url('admin/skill/edit/' + skill[:skill_id].to_s)){'edit'} %></sup></li>
     <% end %>
   </ul>
 <% end %>

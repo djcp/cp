@@ -2,21 +2,21 @@
   @cgi_obj.fieldset() do
     '<legend>' + title + '</legend>' + 
     '<div>' + 
-    ((edit) ? @cgi_obj.hidden('name' => 'skill_id', 'value' => @skill[0].to_s) : '' ) +
+    ((edit) ? @cgi_obj.hidden('name' => 'skill_id', 'value' => @skill.pk.to_s) : '' ) +
     @cgi_obj.label('for' => 'skill_name'){'Skill'} +
-    @cgi_obj.text_field('name' => 'name', 'id' => 'skill_name', 'size' => '50', 'value' => @skill[1]) + 
+    @cgi_obj.text_field('name' => 'name', 'id' => 'skill_name', 'size' => '50', 'value' => @skill.name) + 
     "</div>" +  
     "<div>" + 
     @cgi_obj.label('for' => 'skill_url'){"Canonical link for skill - e.g. for ruby you'd link to ruby-lang.org"} +
-    @cgi_obj.text_field('name' => 'url', 'id' => 'skill_url', 'size' => '100', 'value' => @skill[2]) + 
+    @cgi_obj.text_field('name' => 'url', 'id' => 'skill_url', 'size' => '100', 'value' => @skill.url) + 
     "</div>" +
     '<div class="textarea">' + 
     @cgi_obj.label('for' => 'skill_description'){'Description'} + 
-    @cgi_obj.textarea('name' => 'description', 'id' => 'skill_description', 'value' => @skill[3]) + 
+    @cgi_obj.textarea('name' => 'description', 'id' => 'skill_description'){ @skill.description} + 
     '</div>' +
     '<div>' + 
     @cgi_obj.label('for' => 'skill_skill_level'){'Skill level'} + 
-    @cgi_obj.text_field('name' => 'skill_level', 'id' => 'skill_skill_level', 'value' => @skill[4].to_s) + 
+    @cgi_obj.text_field('name' => 'skill_level', 'id' => 'skill_skill_level', 'value' => @skill.skill_level.to_s) + 
     '</div>' +
     '<div>' +
     @cgi_obj.submit(title) + 
